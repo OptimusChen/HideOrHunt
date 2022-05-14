@@ -1,0 +1,45 @@
+main: com.itech4kids.Hide_or_Hunt.Main
+version: 1.0
+name: Hide_or_Hunt
+commands:
+  start:
+    description:
+  teamwith:
+    description:
+  accept:
+    aliases: []
+    description:
+  deny:
+    aliases: []
+    description:
+  stats:
+    aliases: []
+    description:
+  resume:
+    aliases: []
+    description:
+  pause:
+    aliases: []
+    description:
+  beacon:
+    aliases: []
+    description:
+  unhide:
+    aliases: []
+    description:
+  hide:
+    aliases: []
+    description:
+  setbase:
+    aliases: []
+    description:
+  broadcast:
+    aliases: [bcast]
+    description:
+  adminbase:
+    aliases: []
+    description:
+  gui:
+    aliases: []
+    description:
+api-version: 1.13
