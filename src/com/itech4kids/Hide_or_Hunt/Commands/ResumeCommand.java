@@ -1,5 +1,6 @@
-package com.itech4kids.Hide_or_Hunt;
+package com.itech4kids.Hide_or_Hunt.Commands;
 
+import com.itech4kids.Hide_or_Hunt.Main;
 import com.sun.deploy.uitoolkit.ui.ConsoleController;
 import com.sun.org.apache.xml.internal.security.c14n.helper.C14nHelper;
 import org.bukkit.ChatColor;

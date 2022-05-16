@@ -1,5 +1,7 @@
-package com.itech4kids.Hide_or_Hunt;
+package com.itech4kids.Hide_or_Hunt.Commands;
 
+import com.itech4kids.Hide_or_Hunt.ActivePlayer;
+import com.itech4kids.Hide_or_Hunt.Main;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,7 +23,7 @@ public class BeaconCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
         Player player = (Player) sender;
         ActivePlayer activePlayer = main.getActiveInstance(player.getName());
-        if (activePlayer.team.beacon == null && activePlayer.team.placed == true){
+        if (activePlayer.team.beacon == null && activePlayer.team.placed){
             player.sendMessage(main.prefix + ChatColor.RED + "Your beacon was destroyed :(");
         }else{
             player.sendMessage(main.prefix + ChatColor.GREEN + "Your beacon is at: " + activePlayer.team.beacon.getLocation().getX() + " " + activePlayer.team.beacon.getLocation().getY() + " " + activePlayer.team.beacon.getLocation().getZ());

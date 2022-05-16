@@ -1,15 +1,15 @@
-package com.itech4kids.Hide_or_Hunt;
+package com.itech4kids.Hide_or_Hunt.Commands;
 
-import org.bukkit.ChatColor;
+import com.itech4kids.Hide_or_Hunt.ActivePlayer;
+import com.itech4kids.Hide_or_Hunt.Main;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class HideCommand implements CommandExecutor {
-
+public class unHideCommand implements CommandExecutor {
     private Main main;
-    public HideCommand(Main main){
+    public unHideCommand(Main main){
         this.main = main;
     }
 
@@ -18,9 +18,8 @@ public class HideCommand implements CommandExecutor {
         Player player = (Player) sender;
         if (player.isOp() == true){
             ActivePlayer activePlayer = main.getActiveInstance(player.getName());
-            main.vanish(player);
+            main.unVanish(player);
         }
         return false;
     }
-
 }

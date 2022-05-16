@@ -1,5 +1,7 @@
-package com.itech4kids.Hide_or_Hunt;
+package com.itech4kids.Hide_or_Hunt.Commands;
 
+import com.itech4kids.Hide_or_Hunt.Main;
+import com.itech4kids.Hide_or_Hunt.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -27,7 +29,7 @@ public class StatsCommand implements CommandExecutor {
         if (playerTeam.beacon != null){
          player.sendMessage(main.prefix + ChatColor.AQUA + "You beacon is still standing!");
 
-        }else if(playerTeam.beacon == null && playerTeam.placed == true){
+        }else if(playerTeam.placed){
 
             player.sendMessage(main.prefix + ChatColor.RED + "Your beacon was destroyed!");
 

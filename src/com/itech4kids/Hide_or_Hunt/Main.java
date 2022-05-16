@@ -1,22 +1,20 @@
 package com.itech4kids.Hide_or_Hunt;
 
-import com.sk89q.worldedit.CuboidClipboard;
+import com.itech4kids.Hide_or_Hunt.Commands.*;
+import com.itech4kids.Hide_or_Hunt.Listeners.EventListener;
+import com.itech4kids.Hide_or_Hunt.Listeners.SideBarListener;
+import com.itech4kids.Hide_or_Hunt.Listeners.VanishListener;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.schematic.MCEditSchematicFormat;
-import com.sk89q.worldedit.world.DataException;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.*;
-import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -27,7 +25,6 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.*;
 
 public class Main extends JavaPlugin {
@@ -79,18 +76,13 @@ public class Main extends JavaPlugin {
         getCommand("broadcast").setExecutor(new BroadcastCommand(this));
         getCommand("adminbase").setExecutor(new AdminBaseCommand(this));
         getCommand("gui").setExecutor(new GuiCommand(this));
-        //getCommand("whatresourcepack").setExecutor(new resourcepackCommand(this));
 
         this.getConfig().options().copyDefaults();
         saveDefaultConfig();
 
         Bukkit.getPluginManager().registerEvents(new EventListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new com.itech4kids.Hide_or_Hunt.SideBarListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new SideBarListener(this), this);
         Bukkit.getPluginManager().registerEvents(new VanishListener(this), this);
-
-        //bossBar = Bukkit.createBossBar(ChatColor.GOLD + "Welcome to Hide or Hunt!"
-        //, BarColor.BLUE
-        //, BarStyle.SOLID);
     }
 
     public static Main getMain() { return main; }
@@ -151,16 +143,6 @@ public class Main extends JavaPlugin {
         score.setScore(scoreIndex);
         scoreIndex = scoreIndex + 1;
 
-       /* if (started != true){
-            score = obj.getScore(ChatColor.GREEN + "to form a team!");
-            score.setScore(scoreIndex);
-            scoreIndex = scoreIndex +1;
-
-            score = obj.getScore(ChatColor.GREEN + "/teamwith <name>");
-            score.setScore(scoreIndex);
-            scoreIndex = scoreIndex + 1;
-        }
-        */
         player.setScoreboard(board);
     }
 
@@ -184,38 +166,6 @@ public class Main extends JavaPlugin {
         }
     }
 
-    /*
-    private int displayInitScoreBoard(int scoreNum, Objective objective) {
-        Score score = objective.getScore(ChatColor.YELLOW + "Use /teamwith");
-        score.setScore(scoreNum--);
-        score = objective.getScore(ChatColor.YELLOW + "<username>");
-        score.setScore(scoreNum--);
-        score = objective.getScore(ChatColor.YELLOW + "to form a team!");
-        score.setScore(scoreNum--);
-        return scoreNum;
-    }
-
-        private int displayPlayingScoreBoard(int scoreNum, Objective objective, Player player) {
-            if(timer > 0){
-                player.getScoreboard().getTeam("PvP_Enables").setSuffix(timer/60 + ":"
-                        + String.format("%02d", timer%60));
-            }else if (timer == -1) {
-                player.getScoreboard().getTeam("PvP_Enables").setSuffix("NOT STARTED");
-            } else {
-                player.getScoreboard().getTeam("PvP_Enables").setSuffix("NOW");
-            }
-            Score score = objective.getScore(ChatColor.YELLOW + "Pvp Enables: " );
-            score.setScore(scoreNum--);
-            score = objective.getScore(ChatColor.YELLOW + "Use /join to join");
-            score.setScore(scoreNum--);
-            score = objective.getScore(ChatColor.YELLOW + "    ");
-            score.setScore(scoreNum--);
-            score = objective.getScore(ChatColor.YELLOW + "Number of Players: " + ChatColor.GOLD + players.size());
-            score.setScore(scoreNum--);
-            return scoreNum;
-        }
-
-     */
     public void AddTeam(Team team) {
         teams.add(team);
         updateScoreBoard();
@@ -303,143 +253,6 @@ public class Main extends JavaPlugin {
             double health = Math.round(player.getHealth() + d + entityPlayer.getAbsorptionHearts());
             player.setPlayerListName(ChatColor.RED + player.getName() + "   " + ChatColor.YELLOW + health);
         }
-    }
-
-    public boolean airDrops(Player sendPlayer) {
-        Random rand = new Random();
-        int i = rand.nextInt(5);
-        int f = rand.nextInt((int) (sendPlayer.getWorld().getWorldBorder().getSize() / 2));
-        int g = rand.nextInt((int) (sendPlayer.getWorld().getWorldBorder().getSize() / 2));
-        int s = rand.nextInt(2);
-        int h = rand.nextInt(2);
-        if (s == 1 || h == 2) {
-            f = -f;
-        }
-        if (h == 1 || h == 2) {
-            g = -g;
-        }
-
-        Vector loc = new Vector(f, 100, g);
-        if (i == 1) {
-            WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-            File schematic = new File("plugins/Hide_or_Hunt/air_drop1.schematic");
-            EditSession session = we.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(sendPlayer.getWorld()), 1000000);
-            try {
-                MCEditSchematicFormat.getFormat(schematic).load(schematic).paste(session, loc, false);
-                return true;
-            } catch (MaxChangedBlocksException
-                    | com.sk89q.worldedit.data.DataException | IOException e2) {
-                e2.printStackTrace();
-            }
-        } else if (i == 2) {
-            WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-            File schematic = new File("plugins/Hide_or_Hunt/air_drop2.schematic");
-            EditSession session = we.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(sendPlayer.getWorld()), 1000000);
-            try {
-                MCEditSchematicFormat.getFormat(schematic).load(schematic).paste(session, loc, false);
-                return true;
-            } catch (MaxChangedBlocksException
-                    | com.sk89q.worldedit.data.DataException | IOException e2) {
-                e2.printStackTrace();
-            }
-        } else if (i == 3) {
-            WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-            File schematic = new File("plugins/Hide_or_Hunt/air_drop3.schematic");
-            EditSession session = we.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(sendPlayer.getWorld()), 1000000);
-            try {
-                MCEditSchematicFormat.getFormat(schematic).load(schematic).paste(session, loc, false);
-                return true;
-            } catch (MaxChangedBlocksException
-                    | com.sk89q.worldedit.data.DataException | IOException e2) {
-                e2.printStackTrace();
-            }
-        } else if (i == 4) {
-            WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-            File schematic = new File("plugins/Hide_or_Hunt/air_drop4.schematic");
-            EditSession session = we.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(sendPlayer.getWorld()), 1000000);
-            try {
-                MCEditSchematicFormat.getFormat(schematic).load(schematic).paste(session, loc, false);
-                return true;
-            } catch (MaxChangedBlocksException
-                    | com.sk89q.worldedit.data.DataException | IOException e2) {
-                e2.printStackTrace();
-            }
-        }
-        return false;
-    }
-
-    public boolean adminBase(Player sendPlayer){
-            Bukkit.getLogger().info("Test");
-            Random rand = new Random();
-            int i = rand.nextInt(6);
-            int f = rand.nextInt((int) (sendPlayer.getWorld().getWorldBorder().getSize()/2));
-            int g = rand.nextInt((int) (sendPlayer.getWorld().getWorldBorder().getSize()/2));
-            int s = rand.nextInt(2);
-            int h = rand.nextInt(2);
-            if (s == 1||s==2){
-                f = -f;
-            }
-            if (h == 1||h==2){
-                g = -g;
-            }
-            Vector loc = new Vector(f,11,g);
-            if (i == 1) {
-                WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-                File schematic = new File("plugins/Hide_or_Hunt/admin_base1.schematic");
-                EditSession session = we.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(sendPlayer.getWorld()), 1000000);
-                try {
-                    MCEditSchematicFormat.getFormat(schematic).load(schematic).paste(session, loc, false);
-                    return true;
-                } catch (MaxChangedBlocksException
-                        | com.sk89q.worldedit.data.DataException | IOException e2) {
-                    e2.printStackTrace();
-                }
-            }else if (i == 2){
-                WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-                File schematic = new File("plugins/Hide_or_Hunt/admin_base2.schematic");
-                EditSession session = we.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(sendPlayer.getWorld()), 1000000);
-                try {
-                    MCEditSchematicFormat.getFormat(schematic).load(schematic).paste(session, loc, false);
-                    return true;
-                } catch (MaxChangedBlocksException
-                        | com.sk89q.worldedit.data.DataException | IOException e2) {
-                    e2.printStackTrace();
-                }
-            }else if (i == 3){
-                WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-                File schematic = new File("plugins/Hide_or_Hunt/admin_base3.schematic");
-                EditSession session = we.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(sendPlayer.getWorld()), 1000000);
-                try {
-                    MCEditSchematicFormat.getFormat(schematic).load(schematic).paste(session, loc, false);
-                    return true;
-                } catch (MaxChangedBlocksException
-                        | com.sk89q.worldedit.data.DataException | IOException e2) {
-                    e2.printStackTrace();
-                }
-            }else if (i == 4){
-                WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-                File schematic = new File("plugins/Hide_or_Hunt/admin_base4.schematic");
-                EditSession session = we.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(sendPlayer.getWorld()), 1000000);
-                try {
-                    MCEditSchematicFormat.getFormat(schematic).load(schematic).paste(session, loc, false);
-                    return true;
-                } catch (MaxChangedBlocksException
-                        | com.sk89q.worldedit.data.DataException | IOException e2) {
-                    e2.printStackTrace();
-                }
-            }else if (i == 5){
-                WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-                File schematic = new File("plugins/Hide_or_Hunt/admin_base5.schematic");
-                EditSession session = we.getWorldEdit().getEditSessionFactory().getEditSession(new BukkitWorld(sendPlayer.getWorld()), 1000000);
-                try {
-                    MCEditSchematicFormat.getFormat(schematic).load(schematic).paste(session, loc, false);
-                    return true;
-                } catch (MaxChangedBlocksException
-                        | com.sk89q.worldedit.data.DataException | IOException e2) {
-                    e2.printStackTrace();
-                }
-            }
-        return false;
     }
 
 }

@@ -1,5 +1,7 @@
-package com.itech4kids.Hide_or_Hunt;
+package com.itech4kids.Hide_or_Hunt.Commands;
 
+import com.itech4kids.Hide_or_Hunt.ActivePlayer;
+import com.itech4kids.Hide_or_Hunt.Main;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -27,7 +29,7 @@ public class GuiCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (player.isOp() == true){
+            if (player.isOp()){
                 ActivePlayer activePlayer = main.getActiveInstance(player.getName());
                 activePlayer.getBukkitPlayer().openInventory(kits);
                 return true;

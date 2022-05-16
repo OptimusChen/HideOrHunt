@@ -1,5 +1,7 @@
-package com.itech4kids.Hide_or_Hunt;
+package com.itech4kids.Hide_or_Hunt.Listeners;
 
+import com.itech4kids.Hide_or_Hunt.ActivePlayer;
+import com.itech4kids.Hide_or_Hunt.Main;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

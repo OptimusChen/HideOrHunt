@@ -1,5 +1,7 @@
-package com.itech4kids.Hide_or_Hunt;
+package com.itech4kids.Hide_or_Hunt.Commands;
 
+import com.itech4kids.Hide_or_Hunt.Main;
+import com.itech4kids.Hide_or_Hunt.Util.SchematicUtils;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
@@ -26,7 +28,7 @@ public class AdminBaseCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         Player sendPlayer = (Player) sender;
-        main.adminBase(sendPlayer);
+        SchematicUtils.adminBase(sendPlayer);
         return false;
     }
 }

@@ -1,11 +1,16 @@
-package com.itech4kids.Hide_or_Hunt;
+package com.itech4kids.Hide_or_Hunt.Listeners;
 
+import com.itech4kids.Hide_or_Hunt.ActivePlayer;
+import com.itech4kids.Hide_or_Hunt.Main;
+import com.itech4kids.Hide_or_Hunt.Team;
+import com.itech4kids.Hide_or_Hunt.Util.GameUtils;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.session.PasteBuilder;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -20,6 +25,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -27,6 +33,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static org.bukkit.Material.*;
@@ -273,14 +281,41 @@ public class EventListener implements Listener {
     @EventHandler
     public void onBeaconPlace(BlockPlaceEvent e) {
         Player player = e.getPlayer();
+        Block block = e.getBlock();
         Team playerTeam = main.getActiveInstance(player.getName()).team;
         if (playerTeam.beacon != null) {
             playerTeam.player1.getInventory().removeItem(new ItemStack(BEACON, 1));
             playerTeam.player2.getInventory().removeItem(new ItemStack(BEACON, 1));
         }
 
-    }
+        if (e.getBlock().getType().equals(CHEST) || e.getBlock().getType().equals(FURNACE) ||
+            e.getBlock().getType().equals(ENCHANTMENT_TABLE)){
 
+            boolean foundBeacon = false;
+            int radius = 20;
+            for (int x = -(radius); x <= radius; x ++)
+            {
+                for (int y = -(radius); y <= radius; y ++)
+                {
+                    for (int z = -(radius); z <= radius; z ++)
+                    {
+                        if (block.getRelative(x,y,z).getType().equals(BEACON))
+                        {
+                            if (block.getRelative(x,y,z).equals(playerTeam.beacon)){
+                                foundBeacon = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!foundBeacon){
+                e.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "You can only place these blocks within 20 blocks from your beacon");
+            }
+        }
+
+    }
 
     @EventHandler
     public void onPlayerDamage(EntityDamageByEntityEvent e) {
@@ -399,6 +434,14 @@ public class EventListener implements Listener {
                 }
             }.runTaskLater(Main.getMain(), 1);
         }
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                activePlayer.player.getInventory().addItem(new ItemStack(STONE_PICKAXE));
+                activePlayer.player.getInventory().addItem(new ItemStack(STONE_AXE));
+            }
+        }.runTaskLater(Main.getMain(), 1);
     }
 
     @EventHandler
@@ -455,9 +498,8 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
-    public void onWorld(PlayerChangedWorldEvent e) {
-        org.bukkit.Location location = new Location(Bukkit.getWorld("world"), 0, 100, 0);
-        e.getPlayer().teleport(location);
+    public void onPortal(PortalCreateEvent e) {
+        e.setCancelled(true);
     }
 
     @EventHandler
@@ -593,16 +635,7 @@ public class EventListener implements Listener {
                         break;
                     case DIAMOND_SWORD:
                         main.timer = 0;
-                        Bukkit.broadcastMessage(main.prefix + ChatColor.YELLOW + "PvP has been enabled!");
-                        PacketPlayOutTitle packet = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + "§4PvP Enabled!" + "\"}"));
-                        PacketPlayOutTitle subTitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + "§2Beware!" + "\"}"));
-                        PacketPlayOutTitle length = new PacketPlayOutTitle(5, 60, 5);
-                        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
-                        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(subTitle);
-                        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(length);
-                        player.playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 10, 10);
-                        main.updateScoreBoard();
-                        player.closeInventory();
+                        GameUtils.enablePvp(player);
                         break;
                     case BRICK:
                         player.performCommand("adminbase");

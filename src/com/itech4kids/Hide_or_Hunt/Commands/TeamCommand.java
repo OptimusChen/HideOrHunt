@@ -1,5 +1,8 @@
-package com.itech4kids.Hide_or_Hunt;
+package com.itech4kids.Hide_or_Hunt.Commands;
 
+import com.itech4kids.Hide_or_Hunt.ActivePlayer;
+import com.itech4kids.Hide_or_Hunt.Main;
+import com.itech4kids.Hide_or_Hunt.Team;
 import javafx.scene.CacheHint;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

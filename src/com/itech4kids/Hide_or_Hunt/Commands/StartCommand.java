@@ -1,5 +1,9 @@
-package com.itech4kids.Hide_or_Hunt;
+package com.itech4kids.Hide_or_Hunt.Commands;
 
+import com.itech4kids.Hide_or_Hunt.ActivePlayer;
+import com.itech4kids.Hide_or_Hunt.Main;
+import com.itech4kids.Hide_or_Hunt.Util.GameUtils;
+import com.itech4kids.Hide_or_Hunt.Util.SchematicUtils;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -84,9 +88,8 @@ public class StartCommand implements CommandExecutor {
                 block.setType(Material.AIR);
             }
             Bukkit.broadcastMessage(main.prefix + ChatColor.DARK_AQUA+ "The game has started!");
-            //main.skyCrates(sendPlayer);
             for (int i = 1; i < 10; ++i){
-             main.adminBase(sendPlayer);
+                SchematicUtils.adminBase(sendPlayer);
             }
             main.timer = 600;
             timerTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(main, new Runnable(){
@@ -95,11 +98,7 @@ public class StartCommand implements CommandExecutor {
                         main.timer = main.timer - 1;
                     }
                     if(main.timer == 0){
-                        for (Map.Entry<String, ActivePlayer> mapElement : main.players.entrySet()) {
-                            String name = mapElement.getKey();
-                            ActivePlayer activePlayer = mapElement.getValue();
-                            Player player = activePlayer.player;
-                        }
+                        GameUtils.enablePvp(sendPlayer);
                         Bukkit.getScheduler().cancelTask(timerTask);
                     }
 
@@ -107,7 +106,8 @@ public class StartCommand implements CommandExecutor {
                 }
 
             }, 0, 20l);
-            main.lootTimer = 660;
+
+            main.lootTimer = 1200;
             getTimerTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(main, new Runnable(){
                 Random rand = new Random();
                 ItemStack itemStack = new ItemStack(Material.DIAMOND_SWORD);
@@ -128,29 +128,8 @@ public class StartCommand implements CommandExecutor {
                     }
 
                     if(main.lootTimer == 0){
-                        for (Map.Entry mapElement : main.players.entrySet()) {
-                            String name = (String) mapElement.getKey();
-                            ActivePlayer activePlayer = (ActivePlayer) mapElement.getValue();
-                            Player player = activePlayer.player;
-                            PacketPlayOutTitle packet = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + "§bLoot Drop!" + "\"}"));
-                            PacketPlayOutTitle subTitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + "§e" + x + " ~ " + z + "\"}"));
-                            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
-                            PacketPlayOutTitle length = new PacketPlayOutTitle(5, 60, 5);
-                            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(subTitle);
-                            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(length);
-                            //player.sendTitle(ChatColor.AQUA + "Loot Drop!", ChatColor.YELLOW + "" + x + " ~ " + z);
-                        }
-                        Bukkit.getScheduler().cancelTask(getTimerTask);
-                        itemMeta.addEnchant(Enchantment.DAMAGE_ALL, j, true);
-                        itemMeta.addEnchant(Enchantment.FIRE_ASPECT, 1, true);
-                        itemMeta2.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 3, true);
-
-                        itemStack2.setItemMeta(itemMeta2);
-                        itemStack.setItemMeta(itemMeta);
-                        // sendPlayer.getWorld().dropItem(loc, itemStack);
-                        // sendPlayer.getWorld().dropItem(loc2, itemStack2);
                         for (int i = 1; i < 4; ++i){
-                            main.airDrops(sendPlayer);
+                            SchematicUtils.airDrops(sendPlayer);
                         }
 
                     }
